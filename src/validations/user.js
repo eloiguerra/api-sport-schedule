@@ -5,7 +5,6 @@ const registerValidation = (data) => {
     full_name: Joi.string().min(3).required(),
     email: Joi.string().min(6).required().email(),
     password: Joi.string().min(6).required(),
-    date_of_birth: Joi.date().required()
   });
 
   const {error} = schema.validate(data);
@@ -21,7 +20,6 @@ const loginValidation = (data) => {
   const {error} = schema.validate(data);
   return error;
 }
-
 
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;

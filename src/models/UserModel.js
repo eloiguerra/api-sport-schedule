@@ -1,7 +1,7 @@
-const database = require('../config/database');
+const moongose = require('../config/database');
 const UserSchema = require('../schemas/UserSchema');
 
-const User = database.model('Users', UserSchema);
+const User = moongose.model('Users', UserSchema);
 
 module.exports = User;
 

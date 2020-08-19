@@ -1,5 +1,5 @@
-const database = require('../config/database');
-const Schema = database.Schema;
+const moongose = require('../config/database');
+const Schema = moongose.Schema;
 
 const UserSchema = new Schema({
   email: {
@@ -12,7 +12,7 @@ const UserSchema = new Schema({
   },
   date_of_birth: {
     type: Date,
-    required: true
+    default: null
   },
   password: {
     type: String,

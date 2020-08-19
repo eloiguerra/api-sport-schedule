@@ -14,7 +14,7 @@ module.exports = {
     try{
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(req.body.password, salt);
-      const {email, full_name, date_of_birth} = req.body;
+      const {email, full_name} = req.body;
 
       if(await User.findOne({email})){
         return res.status(400).send({error: 'User Already Exists'})
@@ -24,7 +24,6 @@ module.exports = {
           email,
           password: hashedPassword,
           full_name,
-          date_of_birth
         });
         return res.send({user});
       }
