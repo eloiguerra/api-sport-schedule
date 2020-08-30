@@ -52,5 +52,16 @@ module.exports = {
     catch(err){
       return res.status(400).send({error: 'System failed'});
     }
+  },
+
+  async read(req, res){
+    try{
+      const {full_name} = req.params;
+      const user = await User.find({full_name});
+      console.log(user);
+    }
+    catch(err){
+      console.log(err);
+    }
   }
 }

@@ -4,14 +4,12 @@ const routes = express.Router();
 const UserController = require('./controllers/UserController');
 const FriendController = require('./controllers/FriendController');
 
-//Rotas do usuário
+const auth = require('./middlewares/auth');
+
 routes.post('/register', UserController.store);
 routes.post('/login', UserController.login);
+routes.get('/users/:full_name', auth, UserController.read);
 
-/* Rotas de amizades em desenvolvimento, pergunta pro prof qual ele
-acha mais seguro. Usar o ID ou o email da pessoa, mesmo sendo óbvio*/
-// routes.post('/friend/:id', FriendController.store);
+routes.post('/friend/:id', auth, FriendController.store);
 
-//Rotas de publicações
-routes.post('/publications', );
 module.exports = routes;
