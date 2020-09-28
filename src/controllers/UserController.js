@@ -2,7 +2,8 @@ const User = require('../models/UserModel');
 const jwt = require('jsonwebtoken');
 const {
   registerValidation,
-  loginValidation
+  loginValidation,
+  updateValidation
 } = require('../validations/user');
 const bcrypt = require('bcryptjs');
 
@@ -24,6 +25,7 @@ module.exports = {
           email,
           password: hashedPassword,
           full_name,
+          profile_photo: '5f67882554dd8f1ce0c36ba9'
         });
         return res.send({user});
       }
@@ -56,12 +58,66 @@ module.exports = {
 
   async read(req, res){
     try{
-      const {full_name} = req.params;
-      const user = await User.find({full_name});
-      console.log(user);
+      const {_id} = req.user;
+      const user = await User.findOne(
+        {_id, _id}//,
+        // 'full_name description profile_photo date_of_birth'
+      )
+      .populate('Image');
+
+      return res.send(user);
+    }
+    catch(err){
+      return res.status(400).send({error: 'System failed'});
+    }
+  },
+
+  async readById(req, res){
+    try{
+      console.log(req.params);
+      const {id} = req.params;
+
+      const user = await User.findById(id);
+
+      if(user)
+        return res.status(200).send(user);
     }
     catch(err){
       console.log(err);
+    }
+  },
+
+  async readByName(req, res){
+    try{
+      console.log(req.params);
+      const {full_name} = req.params;
+
+      const user = await User.find({full_name}, 'full_name _id');
+
+      if(user)
+        return res.status(200).send(user);
+    }
+    catch(err){
+      console.log(err);
+    }
+  },
+
+  async update(req, res){
+    if(updateValidation(req.body))
+        return res.status(400).send({error: 'Invalid data'});
+
+    try{
+      const {_id} = req.user;
+      const {description} = req.body;
+
+      await User.findByIdAndUpdate(_id, {
+        description
+      })
+
+      return res.status(201).send({success: 'Successfully updated'});
+    }
+    catch(err){
+
     }
   }
 }
