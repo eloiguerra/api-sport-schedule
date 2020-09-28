@@ -19,8 +19,8 @@ const UserSchema = new Schema({
     required: true
   },
   profile_photo: {
-    type: String,
-    default: null
+    type: moongose.Schema.Types.ObjectId,
+    ref: 'Image',
   },
   profile_type: {
     type: String,
@@ -28,7 +28,7 @@ const UserSchema = new Schema({
   },
   description: {
     type: String,
-    required: false
+    default: null
   }
 })
 
