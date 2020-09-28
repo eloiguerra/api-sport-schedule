@@ -21,5 +21,15 @@ const loginValidation = (data) => {
   return error;
 }
 
+const updateValidation = (data) => {
+  const schema = Joi.object({
+    description: Joi.string().min(2).max(100)
+  });
+
+  const {error} = schema.validate(data);
+  return error;
+}
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
+module.exports.updateValidation = updateValidation;
