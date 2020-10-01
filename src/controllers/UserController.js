@@ -60,8 +60,8 @@ module.exports = {
     try{
       const {_id} = req.user;
       const user = await User.findOne(
-        {_id, _id}//,
-        // 'full_name description profile_photo date_of_birth'
+        {_id, _id},
+        'full_name description profile_photo date_of_birth'
       )
       .populate('Image');
 
@@ -74,10 +74,12 @@ module.exports = {
 
   async readById(req, res){
     try{
-      console.log(req.params);
       const {id} = req.params;
 
-      const user = await User.findById(id);
+      const user = await User.findById(
+        id,
+        'full_name description profile_photo date_of_birth'
+      );
 
       if(user)
         return res.status(200).send(user);
@@ -89,10 +91,16 @@ module.exports = {
 
   async readByName(req, res){
     try{
-      console.log(req.params);
+      const {_id} = req.user;
       const {full_name} = req.params;
 
-      const user = await User.find({full_name}, 'full_name _id');
+      const user = await User.find({
+        $and: [
+          {_id: {$ne: _id }},
+          {full_name}
+        ]
+      })
+      .select('full_name _id');
 
       if(user)
         return res.status(200).send(user);
