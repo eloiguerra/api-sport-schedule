@@ -1,10 +1,10 @@
-const moongose = require('../config/database');
-
+const moongose = require('mongoose');
 const Schema = moongose.Schema;
 
 const PublicationSchema = new Schema({
   image: {
-    type: String,
+    type: moongose.Schema.Types.ObjectId,
+    ref: 'Image',
     default: null
   },
   description: {
@@ -16,6 +16,11 @@ const PublicationSchema = new Schema({
     ref: 'Sport',
     require: true
   },
+  user: {
+    type: moongose.Schema.Types.ObjectId,
+    ref: 'User',
+    require: true
+  }
 })
 
 module.exports = PublicationSchema;

@@ -1,4 +1,4 @@
-  const moongose = require('../config/database');
+const moongose = require('mongoose');
 const Schema = moongose.Schema;
 
 const UserSchema = new Schema({
