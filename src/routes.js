@@ -10,6 +10,7 @@ const ImageController = require('./controllers/ImageController');
 const SportController = require('./controllers/SportController');
 
 const auth = require('./middlewares/auth');
+const PublicationController = require('./controllers/PublicationController');
 
 routes.post('/register', UserController.store);
 routes.post('/login', UserController.login);
@@ -27,6 +28,9 @@ routes.put('/friends', auth, FriendController.update);
 //Se der tempo, lembrar de fazer o login de adm pra essa rota
 routes.post('/sports', SportController.create);
 routes.get('/sports', SportController.read);
+
+routes.post('/publications', auth, PublicationController.create);
+routes.get('/publications', PublicationController.read);
 
 routes.post('/postProfilePhoto',
   multer(multerConfig).single('file'),
