@@ -25,7 +25,7 @@ module.exports = {
           email,
           password: hashedPassword,
           full_name,
-          profile_photo: '5f67882554dd8f1ce0c36ba9'
+          profile_photo: "5f7732fcbada20318e2c2ad0"
         });
         return res.send({user});
       }
@@ -59,11 +59,15 @@ module.exports = {
   async read(req, res){
     try{
       const {_id} = req.user;
-      const user = await User.findOne(
-        {_id, _id},
-        'full_name description profile_photo date_of_birth'
-      )
-      .populate('Image');
+      const user = await User.findById(
+        _id
+        // 'full_name description profile_photo date_of_birth'
+      ).populate('profile_photo');
+      // .populate('Image');
+
+      // const result = await user.populate('Images').execPopulate();
+
+      // console.log(user.populated('Image'));
 
       return res.send(user);
     }
