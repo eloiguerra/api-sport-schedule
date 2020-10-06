@@ -32,9 +32,14 @@ routes.get('/sports', SportController.read);
 routes.post('/publications', auth, PublicationController.create);
 routes.get('/publications', PublicationController.read);
 
-routes.post('/postProfilePhoto',
+routes.post('/files',
   multer(multerConfig).single('file'),
-  ImageController.profileStore
+  ImageController.store
 );
+routes.put('/files',
+  auth,
+  multer(multerConfig).single('file'),
+  ImageController.update
+)
 
 module.exports = routes;
