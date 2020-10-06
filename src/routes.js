@@ -8,9 +8,9 @@ const UserController = require('./controllers/UserController');
 const FriendController = require('./controllers/FriendController');
 const ImageController = require('./controllers/ImageController');
 const SportController = require('./controllers/SportController');
+const PublicationController = require('./controllers/PublicationController');
 
 const auth = require('./middlewares/auth');
-const PublicationController = require('./controllers/PublicationController');
 
 routes.post('/register', UserController.store);
 routes.post('/login', UserController.login);
@@ -30,7 +30,7 @@ routes.post('/sports', SportController.create);
 routes.get('/sports', SportController.read);
 
 routes.post('/publications', auth, PublicationController.create);
-routes.get('/publications', PublicationController.read);
+routes.get('/publications', auth, PublicationController.read);
 
 routes.post('/files',
   multer(multerConfig).single('file'),

@@ -8,7 +8,7 @@ module.exports = {
 
       const publication = await Publication.create({
         user: _id,
-        sport: "5f75d42b3e25753e755b7970",
+        sport,
         description,
         image: null,
       });
