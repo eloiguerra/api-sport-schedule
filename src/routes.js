@@ -31,6 +31,7 @@ routes.get('/sports', SportController.read);
 
 routes.post('/publications', auth, PublicationController.create);
 routes.get('/publications', auth, PublicationController.read);
+routes.get('/friendsPublications', auth, PublicationController.readByFriends);
 
 routes.post('/files',
   multer(multerConfig).single('file'),
