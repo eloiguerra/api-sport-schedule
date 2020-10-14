@@ -14,6 +14,14 @@ const FriendSchema = new Schema({
   },
   friend_request: {
     type: Boolean
+  },
+  created_at: {
+    type: Date,
+    default: Date.now
+  },
+  updated_at: {
+    type: Date,
+    default: Date.now
   }
 })
 

@@ -20,6 +20,14 @@ const PublicationSchema = new Schema({
     type: moongose.Schema.Types.ObjectId,
     ref: 'User',
     require: true
+  },
+  created_at: {
+    type: Date,
+    default: Date.now
+  },
+  updated_at: {
+    type: Date,
+    default: Date.now
   }
 })
 
