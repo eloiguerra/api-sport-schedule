@@ -21,6 +21,27 @@ const PublicationSchema = new Schema({
     ref: 'User',
     require: true
   },
+  reactions: [{
+    like: {
+      type: Number,
+    },
+    angry: {
+      type: Number
+    },
+    want_play: {
+      type: Number
+    }
+  }],
+  comments: [{
+    description: {
+      type: String
+    },
+    owner: {
+      type: moongose.Schema.Types.ObjectId,
+      ref: 'User',
+      require: true
+    }
+  }],
   created_at: {
     type: Date,
     default: Date.now
