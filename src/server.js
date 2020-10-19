@@ -2,10 +2,16 @@ require('dotenv/config');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const socketIO = require('socket.io');
+const http = require('http');
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
 
 const routes = require('./routes');
+
+const chat = require('./websockets/chat');
 
 app.use(cors());
 app.use(express.json());
@@ -16,4 +22,6 @@ app.use(
 );
 app.use('/', routes);
 
-app.listen(process.env.PORT || 3333);
+chat(io);
+
+server.listen(process.env.PORT || 3333);
