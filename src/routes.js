@@ -44,10 +44,11 @@ routes.post('/files',
   multer(multerConfig).single('file'),
   ImageController.store
 );
-routes.put('/files',
+
+routes.put('/changeProfilePhoto',
   auth,
   multer(multerConfig).single('file'),
-  ImageController.update
+  UserController.updateProfilePhoto
 );
 
 module.exports = routes;
