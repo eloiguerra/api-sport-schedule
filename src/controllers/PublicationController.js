@@ -5,7 +5,10 @@ module.exports = {
   async create(req, res){
     try{
       const {_id} = req.user;
-      const {description, sport, image} = req.body;
+      const {sport} = req.body;
+
+      const description = req.body.description || null;
+      const image = req.body.image || null;
 
       const publication = await Publication.create({
         user: _id,
