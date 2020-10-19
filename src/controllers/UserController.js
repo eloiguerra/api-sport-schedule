@@ -25,7 +25,7 @@ module.exports = {
           email,
           password: hashedPassword,
           full_name,
-          profile_photo: "5f78f89f85cf6047a144f9fb"
+          profile_photo: "5f8711ed8f8ba4738bdfce41"
         });
         return res.send({user});
       }
@@ -75,9 +75,8 @@ module.exports = {
       const {id} = req.params;
 
       const user = await User.findById(
-        id,
-        'full_name description profile_photo date_of_birth'
-      );
+        id
+      ).populate('profile_photo');
 
       if(user)
         return res.status(200).send(user);
@@ -95,13 +94,12 @@ module.exports = {
       const user = await User.find({
         $and: [
           {_id: {$ne: _id }},
-          {full_name}
+          {full_name: {$regex: `^${full_name}`, $options: 'i'}}
         ]
       })
       .select('full_name _id');
 
-      if(user)
-        return res.status(200).send(user);
+      return res.status(200).send(user);
     }
     catch(err){
       console.log(err);
