@@ -1,4 +1,5 @@
 const User = require('../models/UserModel');
+const Image = require('../models/ImageModel');
 const jwt = require('jsonwebtoken');
 const {
   registerValidation,
@@ -25,7 +26,7 @@ module.exports = {
           email,
           password: hashedPassword,
           full_name,
-          profile_photo: "5f8711ed8f8ba4738bdfce41"
+          profile_photo: "5f8e10bd1cc4a368135dc611"
         });
         return res.send({user});
       }
@@ -122,6 +123,37 @@ module.exports = {
     }
     catch(err){
 
+    }
+  },
+
+  async updateProfilePhoto(req, res){
+    try{
+      const session = await Image.startSession();
+      const {_id} = req.user;
+      const {originalname: name, size, filename: key} = req.file;
+
+      await session.withTransaction(async () => {
+        let new_photo = await Image.create({
+          name,
+          size,
+          key,
+          url: `http://localhost:3333/files/${key}`
+        });
+
+        let {profile_photo} = await User.findById(_id).select('profile_photo');
+
+        if(profile_photo !== "5f8e10bd1cc4a368135dc611"){
+          await Image.findByIdAndRemove(profile_photo);
+        }
+
+        await User.findByIdAndUpdate(_id, {profile_photo: new_photo._id});
+
+        return res.status(201).send(new_photo);
+      });
+      session.endSession();
+    }
+    catch(err){
+      return res.status(400).send({error: err});
     }
   }
 }
