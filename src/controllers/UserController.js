@@ -26,7 +26,7 @@ module.exports = {
           email,
           password: hashedPassword,
           full_name,
-          profile_photo: "5f8e10bd1cc4a368135dc611"
+          profile_photo: "5f8e17dbe42f0b70b54c82e1"
         });
         return res.send({user});
       }
@@ -142,7 +142,7 @@ module.exports = {
 
         let {profile_photo} = await User.findById(_id).select('profile_photo');
 
-        if(profile_photo !== "5f8e10bd1cc4a368135dc611"){
+        if(profile_photo != "5f8e17dbe42f0b70b54c82e1"){
           await Image.findByIdAndRemove(profile_photo);
         }
 
