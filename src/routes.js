@@ -33,6 +33,7 @@ routes.get('/sports', SportController.read);
 
 routes.post('/publications', auth, PublicationController.create);
 routes.get('/publications', auth, PublicationController.read);
+routes.post('/publications/comments', auth, PublicationController.createComment);
 
 routes.get('/friendsPublications', auth, PublicationController.readByFriends);
 
