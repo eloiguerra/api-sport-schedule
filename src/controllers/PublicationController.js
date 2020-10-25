@@ -35,6 +35,46 @@ module.exports = {
     }
   },
 
+  async createComment(req, res){
+    try{
+      const {comment, publication} = req.body;
+      const {_id} = req.user;
+
+      const post = await Publication
+      .findById(publication)
+      .populate({
+        path: 'user',
+        populate: {path: 'profile_photo'}
+      })
+
+      .populate('image', 'url')
+      .populate('sport')
+
+      await post.comments.push({
+        description: comment,
+        owner: _id
+      })
+
+      await post.populate({
+        path: 'comments',
+        populate: {
+          path: 'owner',
+          select: 'full_name profile_photo',
+          populate: {
+            path: 'profile_photo',
+            select: 'url'
+          }
+        }
+      }).execPopulate();
+
+      post.save();
+      return res.status(201).send(post);
+    }
+    catch(err){
+      console.log(err);
+    }
+  },
+
   async readByFriends(req, res){
     try{
       const {_id} = req.user;
@@ -69,7 +109,22 @@ module.exports = {
       .limit(endIndex).skip(startIndex)
       .populate({
         path: 'user',
-        populate: {path: 'profile_photo'}
+        select: 'full_name profile_photo',
+        populate: {
+          path: 'profile_photo',
+          select: 'url',
+        }
+      })
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'owner',
+          select: 'full_name profile_photo',
+          populate: {
+            path: 'profile_photo',
+            select: 'url'
+          }
+        }
       })
       .populate('sport')
       .populate('image', 'url')
@@ -82,3 +137,5 @@ module.exports = {
     }
   }
 }
+
+
