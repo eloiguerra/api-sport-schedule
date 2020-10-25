@@ -24,12 +24,27 @@ const PublicationSchema = new Schema({
   reactions: [{
     like: {
       type: Number,
+      owner: {
+        type: moongose.Schema.Types.ObjectId,
+        ref: 'User',
+        require: true
+      },
     },
     angry: {
-      type: Number
+      type: Number,
+      owner: {
+        type: moongose.Schema.Types.ObjectId,
+        ref: 'User',
+        require: true
+      },
     },
     want_play: {
-      type: Number
+      type: Number,
+      owner: {
+        type: moongose.Schema.Types.ObjectId,
+        ref: 'User',
+        require: true
+      },
     }
   }],
   comments: [{
