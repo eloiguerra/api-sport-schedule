@@ -10,6 +10,7 @@ const ImageController = require('./controllers/ImageController');
 const SportController = require('./controllers/SportController');
 const PublicationController = require('./controllers/PublicationController');
 const ChatController = require('./controllers/ChatController');
+const GameController = require('./controllers/GameController');
 
 const auth = require('./middlewares/auth');
 
@@ -40,6 +41,8 @@ routes.get('/friendsPublications', auth, PublicationController.readByFriends);
 routes.post('/chat', auth, ChatController.create);
 routes.get('/chat/:friend', auth, ChatController.read);
 
+routes.post('/games', auth, GameController.create);
+routes.get('/games', auth, GameController.read);
 
 routes.post('/files',
   multer(multerConfig).single('file'),
