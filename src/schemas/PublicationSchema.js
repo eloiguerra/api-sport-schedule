@@ -21,31 +21,12 @@ const PublicationSchema = new Schema({
     ref: 'User',
     require: true
   },
-  reactions: [{
-    like: {
-      type: Number,
-      owner: {
-        type: moongose.Schema.Types.ObjectId,
-        ref: 'User',
-        require: true
-      },
+  likes: [{
+    owner: {
+      type: moongose.Schema.Types.ObjectId,
+      ref: 'User',
+      require: true
     },
-    angry: {
-      type: Number,
-      owner: {
-        type: moongose.Schema.Types.ObjectId,
-        ref: 'User',
-        require: true
-      },
-    },
-    want_play: {
-      type: Number,
-      owner: {
-        type: moongose.Schema.Types.ObjectId,
-        ref: 'User',
-        require: true
-      },
-    }
   }],
   comments: [{
     description: {
