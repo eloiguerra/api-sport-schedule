@@ -1,28 +1,44 @@
 const Friend = require('../models/FriendModel');
+const User = require('../models/UserModel');
 
 module.exports = {
   async store(req, res){
     const user = req.user._id;
     const friend = req.body.id;
 
-    const friendship = await Friend.findOne({user, friend});
-    if(friendship){
-      if(friendship.friend_request){
-        return res.status(400).send({message: 'Pending friend request'});
-      }
-      else{
-        return res.status(400).send({message: 'You are already friends'})
-      }
-    }
-    else {
-      const result = await Friend.create({
-        user,
-        friend,
-        friend_request: true,
-      });
+    /* const requester = await Friend.findOneAndUpdate(
+        { requester: user, recipient: friend },
+        { $set: { status: 1 }},
+        { upsert: true, new: true }
+    )
 
-      return res.status(201).send(result);
-    }
+    const requested = await Friend.findOneAndUpdate(
+        { recipient: user, requester: friend },
+        { $set: { status: 2 }},
+        { upsert: true, new: true }
+    ) */
+
+    const requested = await Friend.findOneAndUpdate(
+      { recipient: user, requester: friend },
+      { $set: { status: 1 }},
+      { upsert: true, new: true }
+    )
+    const requester = await Friend.findOneAndUpdate(
+      { requester: user, recipient: friend },
+      { $set: { status: 2 }},
+      { upsert: true, new: true }
+    )
+
+    const updateRequester = await User.findOneAndUpdate(
+      { _id: user },
+      { $push: { friendship: requester._id }}
+    )
+    const updateRequested = await User.findOneAndUpdate(
+      { _id: friend },
+      { $push: { friendship: requested._id }}
+    )
+
+    return res.status(201).send(updateRequested);
   },
 
   async read(req, res){
@@ -56,13 +72,20 @@ module.exports = {
         select: 'full_name'
       })
 
-      friendship.map(item => {
-        if(item.user === _id)
-          friends.push(item.user);
-        else
-          friends.push(item.friend);
+      friendship.filter(item => {
+        item.user || item.friend !== _id && friends.push(item);
       });
 
+      friendship.map(item => {
+        if(item.user === _id){
+          friends.push(item.friend);
+        }
+        else{
+          friends.push(item.user);
+        }
+      });
+
+      console.log(friends);
       return res.status(200).send(friends);
     }
     catch(err){
@@ -92,13 +115,18 @@ module.exports = {
   async update(req, res){
     try{
       const {id} = req.body;
+      const {_id} = req.user;
 
-      const friendship = await Friend.findByIdAndUpdate(
-        id,
-        {friend_request: false}
-      );
+      await Friend.findOneAndUpdate(
+        { requester: id, recipient: _id },
+        { $set: { status: 3 }}
+      )
+      await Friend.findOneAndUpdate(
+        { recipient: id, requester: _id },
+        { $set: { status: 3 }}
+      )
 
-      return res.status(200).send(friendship);
+      return res.status(200).send({message: 'Accepted'});
     }
     catch(err){
       console.log(err);

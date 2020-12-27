@@ -1,5 +1,6 @@
 const Publication = require('../models/PublicationModel');
 const Friend = require('../models/FriendModel');
+const User = require('../models/UserModel');
 
 module.exports = {
   async create(req, res){
@@ -46,7 +47,6 @@ module.exports = {
         path: 'user',
         populate: {path: 'profile_photo'}
       })
-
       .populate('image', 'url')
       .populate('sport')
 
@@ -146,24 +146,25 @@ module.exports = {
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
 
-      let friends = [];
+      const friends = [];
 
-      const friendship = await Friend.find({
-        $and:[
-          {$or:[
-            {$and: [{friend: {$ne: _id}}, {user: _id}]},
-            {$and: [{friend: _id}, {user: {$ne: _id}}]},
-          ]},
-          {friend_request: false}
-        ]
-      });
+      const {friendship} = await User.findById(_id)
+        .populate({
+          path: 'friendship',
+          select: '_id requester recipient',
+          populate: {
+            path: 'requester recipient',
+            model: 'User',
+            select: '_id',
+          },
+          match: {status: {$eq: 3}}
+        })
 
       friendship.map(item => {
-        if(item.user != _id)
-          friends.push(item.user);
-        else
-          friends.push(item.friend);
-      });
+        item.requester_id == _id
+        ? friends.push(item.requester._id)
+        : friends.push(item.recipient._id)
+      })
 
       const publications = await Publication.find({
         user: {$in: friends}
@@ -202,8 +203,7 @@ module.exports = {
       .populate('sport')
       .populate('image', 'url')
 
-      if(publications.length)
-        return res.status(200).send(publications);
+      return res.status(200).send(publications);
     }
     catch(err){
       console.log(err);

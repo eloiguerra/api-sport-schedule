@@ -1,4 +1,5 @@
 const User = require('../models/UserModel');
+const Friend = require('../models/FriendModel');
 const Image = require('../models/ImageModel');
 const jwt = require('jsonwebtoken');
 const {
@@ -26,7 +27,7 @@ module.exports = {
           email,
           password: hashedPassword,
           full_name,
-          profile_photo: "5f8e17dbe42f0b70b54c82e1"
+          profile_photo: "5fe79b574773a335c9691d58"
         });
         return res.send({user});
       }
@@ -60,6 +61,7 @@ module.exports = {
   async read(req, res){
     try{
       const {_id} = req.user;
+
       const user = await User.findById(
         _id
       ).populate('profile_photo');
@@ -74,13 +76,34 @@ module.exports = {
   async readById(req, res){
     try{
       const {id} = req.params;
+      const {_id} = req.user;
 
-      const user = await User.findById(
-        id
-      ).populate('profile_photo');
+      const user = await User.findById(id)
+        .populate({
+          path: 'profile_photo',
+          select: 'url'
+        })
+        .populate({
+          path: 'friendship',
+        });
 
-      if(user)
-        return res.status(200).send(user);
+        if(user.friendship.length){
+          const friendVisited = user.friendship.filter(item => {
+            if((item.recipient == _id && item.requester == id) || (item.recipient == id && item.requester == _id)){
+              return item;
+            }
+          })
+
+          const data = {
+            ...user._doc,
+            friendship: friendVisited.length ? friendVisited[0] : false
+          };
+
+          return res.status(200).send(data);
+        }
+        else{
+          return res.status(200).send(user);
+        }
     }
     catch(err){
       console.log(err);
@@ -98,7 +121,8 @@ module.exports = {
           {full_name: {$regex: `^${full_name}`, $options: 'i'}}
         ]
       })
-      .select('full_name _id');
+      // .select('full_name _id url')
+      .populate('profile_photo');
 
       return res.status(200).send(user);
     }
@@ -142,7 +166,7 @@ module.exports = {
 
         let {profile_photo} = await User.findById(_id).select('profile_photo');
 
-        if(profile_photo != "5f8e17dbe42f0b70b54c82e1"){
+        if(profile_photo != "5fe79b574773a335c9691d58"){
           await Image.findByIdAndRemove(profile_photo);
         }
 

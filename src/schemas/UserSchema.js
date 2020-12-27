@@ -18,6 +18,10 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
+  friendship: [{
+    type: moongose.Schema.Types.ObjectId,
+    ref: 'Friend',
+  }],
   profile_photo: {
     type: moongose.Schema.Types.ObjectId,
     ref: 'Image',

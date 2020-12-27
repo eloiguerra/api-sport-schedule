@@ -1,7 +1,7 @@
 const moongose = require('mongoose');
 const Schema = moongose.Schema;
 
-const UserSchema = new Schema({
+const ImageSchema = new Schema({
   name: {
     type: String,
   },
@@ -24,4 +24,4 @@ const UserSchema = new Schema({
   }
 })
 
-module.exports = UserSchema;
+module.exports = ImageSchema;

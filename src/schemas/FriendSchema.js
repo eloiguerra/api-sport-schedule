@@ -2,18 +2,22 @@ const moongose = require('mongoose');
 const Schema = moongose.Schema;
 
 const FriendSchema = new Schema({
-  user: {
-    type: moongose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+  requester: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   },
-  friend: {
-    type: moongose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+  recipient: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   },
-  friend_request: {
-    type: Boolean
+  status: {
+    type: Number,
+    enums: [
+        0,    //'Adicionar amigo',
+        1,    //'Enviado',
+        2,    //'Pendente',
+        3,    //'Já são amigos'
+    ]
   },
   created_at: {
     type: Date,
