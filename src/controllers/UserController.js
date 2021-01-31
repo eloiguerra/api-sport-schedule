@@ -85,7 +85,7 @@ module.exports = {
         })
         .populate({
           path: 'friendship',
-        });
+        })
 
         if(user.friendship.length){
           const friendVisited = user.friendship.filter(item => {

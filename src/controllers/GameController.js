@@ -4,8 +4,9 @@ module.exports = {
   async create(req, res){
     try{
       const {
-        name, date, description,
-        sport, lat, lng
+        name, date, hour,
+        description, sport,
+        lat, lng
       } = req.body;
 
       const game = await Game.create({
@@ -13,6 +14,7 @@ module.exports = {
         name,
         description,
         date,
+        hour,
         sport,
         lat,
         lng

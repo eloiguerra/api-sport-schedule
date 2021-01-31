@@ -13,6 +13,7 @@ const ChatController = require('./controllers/ChatController');
 const GameController = require('./controllers/GameController');
 
 const auth = require('./middlewares/auth');
+const NotificationController = require('./controllers/NotificationController');
 
 routes.post('/register', UserController.store);
 routes.post('/login', UserController.login);
@@ -27,23 +28,28 @@ routes.post('/friends', auth, FriendController.store);
 routes.get('/friends', auth, FriendController.read);
 routes.get('/friends/:id', auth, FriendController.readByFriend);
 routes.put('/friends', auth, FriendController.update);
+routes.delete('/friends/:id', auth, FriendController.delete);
 
 //Se der tempo, lembrar de fazer o login de adm pra essa rota
 routes.post('/sports', SportController.create);
 routes.get('/sports', SportController.read);
 
 routes.post('/publications', auth, PublicationController.create);
-routes.get('/publications', auth, PublicationController.read);
 routes.post('/publications/comments', auth, PublicationController.createComment);
-routes.post('/publications/likes', auth, PublicationController.createLike);
+// routes.post('/publications/likes', auth, PublicationController.createLike);
 
 routes.get('/friendsPublications', auth, PublicationController.readByFriends);
+routes.get('/ownerPublications', auth, PublicationController.readByOwner);
+routes.get('/visitedPublications/:id', auth, PublicationController.readByFriend);
+
 
 routes.post('/chat', auth, ChatController.create);
 routes.get('/chat/:friend', auth, ChatController.read);
 
 routes.post('/games', auth, GameController.create);
 routes.get('/games', auth, GameController.read);
+
+routes.get('/notifications', auth, NotificationController.read);
 
 routes.post('/files',
   multer(multerConfig).single('file'),

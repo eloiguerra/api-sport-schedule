@@ -1,22 +1,11 @@
 const Friend = require('../models/FriendModel');
 const User = require('../models/UserModel');
+const Notification = require('../models/NotificationModel');
 
 module.exports = {
   async store(req, res){
     const user = req.user._id;
     const friend = req.body.id;
-
-    /* const requester = await Friend.findOneAndUpdate(
-        { requester: user, recipient: friend },
-        { $set: { status: 1 }},
-        { upsert: true, new: true }
-    )
-
-    const requested = await Friend.findOneAndUpdate(
-        { recipient: user, requester: friend },
-        { $set: { status: 2 }},
-        { upsert: true, new: true }
-    ) */
 
     const requested = await Friend.findOneAndUpdate(
       { recipient: user, requester: friend },
@@ -38,54 +27,42 @@ module.exports = {
       { $push: { friendship: requested._id }}
     )
 
-    return res.status(201).send(updateRequested);
+    const notification = await Notification.create({
+      requester: user,
+      recipient: friend,
+      type: 1
+    })
+
+    return res.status(201).send(requested);
   },
 
   async read(req, res){
     try{
       const {_id} = req.user;
+
       let friends = [];
 
-      const friendship = await Friend.find({
-        $and:[
-          {friend_request: false},
-          {$or: [
-            {user: _id},
-            {friend: _id}
-          ]}
-        ]
-      })
-      .populate({
-        path: 'user',
-        populate: {
-          path: 'profile_photo',
-          select: 'url'
-        },
-        select: 'full_name'
-      })
-      .populate({
-        path: 'friend',
-        populate: {
-          path: 'profile_photo',
-          select: 'url'
-        },
-        select: 'full_name'
-      })
-
-      friendship.filter(item => {
-        item.user || item.friend !== _id && friends.push(item);
-      });
+      const {friendship} = await User.findById(_id)
+        .populate({
+          path: 'friendship',
+          select: '_id requester recipient',
+          populate: {
+            path: 'requester recipient',
+            select: 'profile_photo, full_name',
+            populate: {
+              path: 'profile_photo',
+              select: 'url'
+            }
+          },
+          match: {status: {$eq: 3}}
+        })
 
       friendship.map(item => {
-        if(item.user === _id){
-          friends.push(item.friend);
-        }
-        else{
-          friends.push(item.user);
-        }
-      });
+        item.requester_id == _id
+        ? friends.push(item.requester)
+        : friends.push(item.recipient)
+      })
 
-      console.log(friends);
       return res.status(200).send(friends);
     }
     catch(err){
@@ -117,16 +94,61 @@ module.exports = {
       const {id} = req.body;
       const {_id} = req.user;
 
-      await Friend.findOneAndUpdate(
+     await Friend.findOneAndUpdate(
         { requester: id, recipient: _id },
         { $set: { status: 3 }}
       )
-      await Friend.findOneAndUpdate(
+     await Friend.findOneAndUpdate(
         { recipient: id, requester: _id },
         { $set: { status: 3 }}
       )
 
-      return res.status(200).send({message: 'Accepted'});
+      await Notification.findOneAndDelete({
+        recipient: _id,
+        requester: id,
+        type: 1
+      })
+      return res.status(200).send({message: 'Success'});
+    }
+    catch(err){
+      console.log(err);
+    }
+  },
+
+  async delete(req, res){
+    try {
+      const friend = req.params.id;
+      const user = req.user._id;
+
+      const requested = await Friend.findOneAndUpdate(
+        { recipient: user, requester: friend },
+        { $set: { status: 0 }},
+      )
+      const requester = await Friend.findOneAndUpdate(
+        { requester: user, recipient: friend },
+        { $set: { status: 0 }},
+      )
+
+      const updateRequester = await User.findOneAndUpdate(
+        { _id: user },
+        { $push: { friendship: requester._id }}
+      )
+      const updateRequested = await User.findOneAndUpdate(
+        { _id: friend },
+        { $push: { friendship: requested._id }}
+      )
+      .populate({
+        path: 'friendship',
+        match: {_id: {$eq: friend}}
+      });
+
+      await Notification.findOneAndDelete({
+        recipient: user,
+        requester: friend,
+        type: 1
+      })
+
+      return res.send(updateRequested);
     }
     catch(err){
       console.log(err);

@@ -13,6 +13,10 @@ const GameSchema = new Schema({
     type: Date,
     required: true
   },
+  hour: {
+    type: String,
+    required: true
+  },
   lat: {
     type: Number,
     required: true
